@@ -164,6 +164,7 @@
 <li><p>2.虚拟现实场景交互<br>  设备就用的htc vive<br>  htc封装了一套SteamVR插件。三个比较重要的prefab<br>  [Camerarig]    有一个manager类去不断检测手柄<br>  [status]    一些位置信息<br>  [steamVR]    渲染组件，<br>  利用别人的轮子VRTK实现基本物体抓取，位移，touchpad等操作。<br>  RadialMenu解决touchpah盘，Radial上有Onclick接口，可以实现监听事件。<br>  SteamVR的接口使用代码也比较简单：</p>
   <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">SteamVR_TrackedObject hand;</div><div class="line">   SteamVR_Controller.Device device;</div><div class="line"></div><div class="line">   hand = GetComponent&lt;SteamVR_TrackedObject&gt;();</div><div class="line">   device = SteamVR_Controller.Input((int)hand.index);</div><div class="line"></div><div class="line">if (device.GetTouchUp(SteamVR_Controller.ButtonMask.Trigger))</div><div class="line">   &#123;</div><div class="line">     //TODO</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
 <p>  这方面的应用展现个人觉得比较简单，但难点应该在shader和SteamVR硬件优化上面。</p>
+<h2 id="Result"><a href="#Result" class="headerlink" title="Result"></a>Result</h2><p>  结果实现可以在虚拟现实条件下观察罪犯的可能性行为，做进一步分析。</p>
 </li>
 </ul>
 
@@ -299,9 +300,9 @@
         <div class="sidebar-tags">
     <div class="sidebar-tags-name">
     
-        <span class="sidebar-tag-name"><a href= "#">Project</a></span>
-    
         <span class="sidebar-tag-name"><a href= "#">note</a></span>
+    
+        <span class="sidebar-tag-name"><a href= "#">Project</a></span>
     
     </div>
     <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
