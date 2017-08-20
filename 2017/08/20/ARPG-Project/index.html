@@ -170,8 +170,9 @@
 </ul>
 <p>NHibernateHelper主要帮助链接数据库，通过构建的sessionfactory多commit和query<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">namespace TaidouServer.DB</div><div class="line">&#123;</div><div class="line">    public class NHibernateHelper</div><div class="line">    &#123;</div><div class="line">        private static ISessionFactory sessionFactory = null;//单利模式</div><div class="line"></div><div class="line">        //而NHibernate不仅仅管理.NET类到数据库表的映射（包括.NET 数据类型到SQL数据类型的映射），还提供数据查询和获取数据的方法</div><div class="line"></div><div class="line">        private static void InitializeSessionFactory()</div><div class="line">        &#123;</div><div class="line">            sessionFactory =</div><div class="line">                Fluently.Configure().Database(MySQLConfiguration.Standard.ConnectionString(db =&gt; db.Server(&quot;localhost&quot;).Database(&quot;taidouserver&quot;).Username(&quot;root&quot;).Password(&quot;root&quot;)))</div><div class="line">                    .Mappings(x =&gt; x.FluentMappings.AddFromAssemblyOf&lt;NHibernateHelper&gt;()).BuildSessionFactory();</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        private static ISessionFactory SessionFactory</div><div class="line">        &#123;</div><div class="line">            get</div><div class="line">            &#123;</div><div class="line">                if (sessionFactory == null)</div><div class="line">                    InitializeSessionFactory();</div><div class="line">                return sessionFactory;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        public static ISession OpenSession()</div><div class="line">        &#123;</div><div class="line">            return SessionFactory.OpenSession();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <ul>
-<li>2.客户端<br>主要实现一个IPhotonPerrListener做监听，OnOperationRespone接受服务期短的respone，sendRequest给服务器端发送状态。<h2 id="Result"><a href="#Result" class="headerlink" title="Result"></a>Result</h2>通过制作游戏，了解基本游戏制作过程，对DX及图形学的应用也有了进一步的了解。能够实现在手机上的流畅使用，唯一的不足是独立制作，对服务器端实现功能较少，毕竟一个人经历有限，希望以后能将这个ARPG完善好。游戏的名字暂且叫王者弄鸟吧Σ( ° △ °|||)︴</li>
+<li>2.客户端<br>主要实现一个IPhotonPerrListener做监听，OnOperationRespone接受服务期短的respone，sendRequest给服务器端发送状态。</li>
 </ul>
+<h2 id="Result"><a href="#Result" class="headerlink" title="Result"></a>Result</h2><p>通过制作游戏，了解基本游戏制作过程，对DX及图形学的应用也有了进一步的了解。游戏能够实现在手机上的流畅使用，唯一的不足就是独立制作，对服务器端实现功能较少，毕竟一个人经历有限，希望以后能将这个ARPG完善好。游戏的名字暂且叫王者弄鸟吧Σ( ° △ °|||)︴</p>
 
     </article>
     <!-- 前后页  -->
@@ -239,8 +240,6 @@
     <div class="sidebar-content sidebar-content-show-archive">
           <div class="sidebar-archive">
     <!-- 在ejs中将archive按照时间排序 -->
-    
-    
     
     
     
