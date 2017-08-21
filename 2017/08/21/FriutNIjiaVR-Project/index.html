@@ -154,14 +154,14 @@
 </div>
     <article class="article-entry">
         <h1 id="VR版的水果忍者-射箭游戏"><a href="#VR版的水果忍者-射箭游戏" class="headerlink" title="VR版的水果忍者+射箭游戏"></a>VR版的水果忍者+射箭游戏</h1><blockquote>
-<p>写博客的目的不是为了应付面试，原因一是想保存和展示下自己原来做的东西，二是觉得应该有个好习惯，谁不是从0到1呢，希望各位小弟写的东西的粗略</p>
+<p>写博客的目的不是为了应付面试，原因一是想保存和展示下自己原来做的东西，二是觉得应该有个好习惯，谁不是从0到1呢，希望各位多包涵</p>
 </blockquote>
-<h2 id="Situation"><a href="#Situation" class="headerlink" title="Situation"></a>Situation</h2><p>steam上有一款vr水果忍者，卖68.我就想着能不能自己实现下，把了下逻辑觉得太难。遂搞之。做完玩着玩着，有个大问题，一个手去砍，另一个手没事干！贼类。遂看到又有个射箭游戏，这样双手都解放了。</p>
+<h2 id="Situation"><a href="#Situation" class="headerlink" title="Situation"></a>Situation</h2><p>steam上有一款vr水果忍者，卖68.我就想着能不能自己实现下，扒了下逻辑觉得不太难。遂搞之。做完玩着玩着，有个大问题，一个手去砍，另一个手没事干！贼累。遂看到又有个射箭游戏，这样双手都解放了。</p>
 <h2 id="Task"><a href="#Task" class="headerlink" title="Task"></a>Task</h2><p>基本功能都实现了。放两个图。视频太大还不知道怎么搞。<br><img src="http://ouxkp6mu9.bkt.clouddn.com/11.png" alt="1"></p>
 <h2 id="Action"><a href="#Action" class="headerlink" title="Action"></a>Action</h2><h3 id="水果忍者部分"><a href="#水果忍者部分" class="headerlink" title="水果忍者部分"></a>水果忍者部分</h3><p>其实核心代码就是切割部分。Blinded_AM_ME插件有个meshcut组件。直接利用OnCollisionEnter带入碰撞物体和位置信息即可。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">   public void OnCollisionEnter(Collision collision)</div><div class="line">   &#123;</div><div class="line">       GameObject victim = collision.collider.gameObject;</div><div class="line">       GameObject[] pieces = BLINDED_AM_ME.MeshCut.Cut(victim, transform.position, transform.right, material);</div><div class="line">       if (!pieces[1].GetComponent&lt;Rigidbody&gt;())</div><div class="line">           pieces[1].AddComponent&lt;Rigidbody&gt;();</div><div class="line">       Destroy(pieces[1], 1);</div><div class="line"></div><div class="line">       if (victim.tag == &quot;GameStartUI&quot;)</div><div class="line">       &#123;</div><div class="line">           FruitSpawn.Instance.GameStart();</div><div class="line">           Rigidbody rigibody = pieces[0].GetComponent&lt;Rigidbody&gt;();</div><div class="line">           rigibody.useGravity = false;</div><div class="line">           Destroy(pieces[0], 0.5f);</div><div class="line">       &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <p>cut的核心比较强大，主要是通过碰撞点的位置，针对两边去添加triangles三角网格。</p>
-<p>生成水果就比较简单聊，协程给个初速度角度就ok<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">   void Start () &#123;</div><div class="line">       Score = 0;</div><div class="line">       StartCoroutine(Spawn());</div><div class="line">&#125;</div><div class="line"></div><div class="line">   IEnumerator Spawn()</div><div class="line">   &#123;</div><div class="line">       while (true)</div><div class="line">       &#123;</div><div class="line">           for (int i = 0; i &lt; Random.Range(1, 7); i++)</div><div class="line">           &#123;</div><div class="line">               GameObject Fruit = Instantiate(FruitPrefabs[Random.Range(0, FruitPrefabs.Length)]);</div><div class="line">               Rigidbody rigibody = Fruit.GetComponent&lt;Rigidbody&gt;();</div><div class="line">               rigibody.velocity = new Vector3(0, 8f, 0);</div><div class="line">               rigibody.angularVelocity = new Vector3(Random.Range(-5f, 5f), 0, Random.Range(-5f, 5f));</div><div class="line">               rigibody.useGravity = true;</div><div class="line">               Vector3 Position = transform.position + transform.right * Random.Range(-3f, 3f);</div><div class="line">               Fruit.transform.position = Position;</div><div class="line">           &#125;</div><div class="line">           yield return new WaitForSeconds(2.0f);</div><div class="line">       &#125;</div><div class="line">   &#125;</div></pre></td></tr></table></figure></p>
-<h3 id="射箭游戏部分"><a href="#射箭游戏部分" class="headerlink" title="射箭游戏部分"></a>射箭游戏部分</h3><p>主要就是绑定箭，和拉箭这两个函数，还有一个主意的是箭飞出的时候要改变下箭的朝向，有自由落体的感觉<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">//	SteamVR_TrackedObject hand;	是绑定到手柄上用来检测的</div><div class="line">//	SteamVR_Controller.Device device;	是为了获得手柄的接口</div><div class="line">//	device = SteamVR_Controller.Input((int)hand.index);	获得接口，利用gettouchdown等函数检测扳机等</div><div class="line">   private void AttachArrow()</div><div class="line">   &#123;</div><div class="line">       SteamVR_Controller.Device device = SteamVR_Controller.Input((int)ArrowManager.Instance.trackedobj.index);</div><div class="line">       if (device.GetTouchDown(SteamVR_Controller.ButtonMask.Trigger))</div><div class="line">       &#123;</div><div class="line">           ArrowManager.Instance.AttachBowToArrow();</div><div class="line">       &#125;</div><div class="line">   &#125;</div><div class="line">//朝向位置和速度方向加和</div><div class="line">void FixedUpdate()</div><div class="line">   &#123;</div><div class="line">       if (isFlying&amp;&amp;transform.GetComponent&lt;Rigidbody&gt;().velocity.magnitude &gt; 5)</div><div class="line">       &#123;</div><div class="line">           transform.LookAt(transform.position + transform.GetComponent&lt;Rigidbody&gt;().velocity);</div><div class="line">       &#125;</div><div class="line">   &#125;</div></pre></td></tr></table></figure></p>
+<p>生成水果就比较简单了，协程给个初速度角度就ok<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">   void Start () &#123;</div><div class="line">       Score = 0;</div><div class="line">       StartCoroutine(Spawn());</div><div class="line">&#125;</div><div class="line"></div><div class="line">   IEnumerator Spawn()</div><div class="line">   &#123;</div><div class="line">       while (true)</div><div class="line">       &#123;</div><div class="line">           for (int i = 0; i &lt; Random.Range(1, 7); i++)</div><div class="line">           &#123;</div><div class="line">               GameObject Fruit = Instantiate(FruitPrefabs[Random.Range(0, FruitPrefabs.Length)]);</div><div class="line">               Rigidbody rigibody = Fruit.GetComponent&lt;Rigidbody&gt;();</div><div class="line">               rigibody.velocity = new Vector3(0, 8f, 0);</div><div class="line">               rigibody.angularVelocity = new Vector3(Random.Range(-5f, 5f), 0, Random.Range(-5f, 5f));</div><div class="line">               rigibody.useGravity = true;</div><div class="line">               Vector3 Position = transform.position + transform.right * Random.Range(-3f, 3f);</div><div class="line">               Fruit.transform.position = Position;</div><div class="line">           &#125;</div><div class="line">           yield return new WaitForSeconds(2.0f);</div><div class="line">       &#125;</div><div class="line">   &#125;</div></pre></td></tr></table></figure></p>
+<h3 id="射箭游戏部分"><a href="#射箭游戏部分" class="headerlink" title="射箭游戏部分"></a>射箭游戏部分</h3><p>主要就是绑定箭，和拉箭这两个函数，还有一个注意的是箭飞出的时候要改变下箭的朝向，有自由落体的感觉<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">//	SteamVR_TrackedObject hand;	是绑定到手柄上用来检测的</div><div class="line">//	SteamVR_Controller.Device device;	是为了获得手柄的接口</div><div class="line">//	device = SteamVR_Controller.Input((int)hand.index);	获得接口，利用gettouchdown等函数检测扳机等</div><div class="line">   private void AttachArrow()</div><div class="line">   &#123;</div><div class="line">       SteamVR_Controller.Device device = SteamVR_Controller.Input((int)ArrowManager.Instance.trackedobj.index);</div><div class="line">       if (device.GetTouchDown(SteamVR_Controller.ButtonMask.Trigger))</div><div class="line">       &#123;</div><div class="line">           ArrowManager.Instance.AttachBowToArrow();</div><div class="line">       &#125;</div><div class="line">   &#125;</div><div class="line">//朝向位置和速度方向加和</div><div class="line">void FixedUpdate()</div><div class="line">   &#123;</div><div class="line">       if (isFlying&amp;&amp;transform.GetComponent&lt;Rigidbody&gt;().velocity.magnitude &gt; 5)</div><div class="line">       &#123;</div><div class="line">           transform.LookAt(transform.position + transform.GetComponent&lt;Rigidbody&gt;().velocity);</div><div class="line">       &#125;</div><div class="line">   &#125;</div></pre></td></tr></table></figure></p>
 <h2 id="Result"><a href="#Result" class="headerlink" title="Result"></a>Result</h2><p>流畅实现运行，玩着和steam的相同。<br><img src="http://ouxkp6mu9.bkt.clouddn.com/22.png" alt="2"><br><img src="http://ouxkp6mu9.bkt.clouddn.com/33.png" alt="3"></p>
 
     </article>
@@ -275,12 +275,30 @@
     
     
     
+    
+    
+    
+    
     <div class="total-archive"> Total : 5 </div>
     
     <div class="post-archive">
     
     
     
+    
+    <div class="archive-year"> 2017 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/21</span><a class="archive-post-title" href= "/2017/08/21/FriutNIjiaVR-Project/" >FriutNIjiaVR Project</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
     
     <div class="archive-year"> Invalid date </div>
     <ul class="year-list">
@@ -298,11 +316,6 @@
     
     <div class="archive-year"> 2017 </div>
     <ul class="year-list">
-    
-    
-        <li class="archive-post-item">
-            <span class="archive-post-date">08/21</span><a class="archive-post-title" href= "/2017/08/21/FriutNIjiaVR-Project/" >FriutNIjiaVR Project</a>
-        </li>
     
     
         <li class="archive-post-item">
